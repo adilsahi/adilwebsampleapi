@@ -36,15 +36,13 @@ namespace Sample.Services
 
         public async Task<IEnumerable<EmployeeModel>> GetAllByFilterAsync(EmployeeFilterModel employeeFilterModel)
         {
-            if(employeeFilterModel != null)
-            {
-                var result = await _employeeRepository.GetAllByFilterAsync(employeeFilterModel.FirstName,employeeFilterModel.LastName,employeeFilterModel.Gender);
+            var result = await _employeeRepository.GetAllByFilterAsync(employeeFilterModel?.FirstName,employeeFilterModel?.LastName,employeeFilterModel?.Gender);
 
-                if(result.Any())
-                {
-                    return result.Select(x => x.Translate());
-                }
+            if(result.Any())
+            {
+                return result.Select(x => x.Translate());
             }
+
             return null;
         }
     }

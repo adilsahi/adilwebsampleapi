@@ -4,7 +4,7 @@ using Sample.Repositories.DbContexts;
 
 namespace Sample.Repositories.DbContexts
 {
-    public class EmployeeDbContext: DbContext
+    public class EmployeeDbContext: DbContext, IEmployeeDbContext
     {
         public EmployeeDbContext(DbContextOptions options) : base(options) { }
 
@@ -12,6 +12,21 @@ namespace Sample.Repositories.DbContexts
         {
             get;
             set;
+        }
+
+        public override int SaveChanges()
+        {
+            return base.SaveChanges();
+        }
+
+        public async override ValueTask DisposeAsync()
+        {
+            await base.DisposeAsync();
+        }
+
+        public async override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        {
+            return await base.SaveChangesAsync(cancellationToken);
         }
     }
 }

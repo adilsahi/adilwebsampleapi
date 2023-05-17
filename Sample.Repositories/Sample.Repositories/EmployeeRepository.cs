@@ -11,7 +11,7 @@ namespace Sample.Repositories
 {
     public class EmployeeRepository : BaseRepository<EmployeeEntity>, IEmployeeRepository
     {
-        public EmployeeRepository(EmployeeDbContext dbContext) : base(dbContext)
+        public EmployeeRepository(IEmployeeDbContext dbContext) : base(dbContext)
         {
 
         }

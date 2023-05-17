@@ -5,8 +5,8 @@ namespace Sample.Repositories
     public abstract class BaseRepository<TEntity> : IBaseRepository<TEntity> 
         where TEntity :class
     {
-        internal EmployeeDbContext _dbContext;
-        public BaseRepository(EmployeeDbContext dbContext)
+        internal IEmployeeDbContext _dbContext;
+        public BaseRepository(IEmployeeDbContext dbContext)
         {
             _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
         }

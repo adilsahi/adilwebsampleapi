@@ -8,14 +8,17 @@ namespace Tests.Unit.Sample.Repositories
     [TestClass]
     public class EmployeeRepositoryUnitTests
     {
-        private DbContextOptions options;
+        IEmployeeRepository employeeRespository;
+        IEmployeeDbContext dbContext;
 
         [TestInitialize]
         public void InMomoryDbContextOptions()
         {
-            options = new DbContextOptionsBuilder<EmployeeDbContext>()
+            DbContextOptions options = new DbContextOptionsBuilder<EmployeeDbContext>()
                         .UseInMemoryDatabase(databaseName: "EmployeeDb")
                         .Options;
+            dbContext = new EmployeeDbContext(options);
+            employeeRespository = new EmployeeRepository(dbContext);
         }
 
         //we can also use Test Setup and Test 
@@ -24,26 +27,17 @@ namespace Tests.Unit.Sample.Repositories
         {
             Task.Run(async () =>
             {
-                using (var context = new EmployeeDbContext(options))
-                {
-                    var employeeRespository = new EmployeeRepository(context);
+                await employeeRespository.CreateAsync(new EmployeeEntity { EmployeeId = 1, Age = 32, FirstName = "Adam", LastName = "Smith", Gender = "Male" });
+                await employeeRespository.CreateAsync(new EmployeeEntity { EmployeeId = 2, Age = 49, FirstName = "Jamima", LastName = "Smith", Gender = "Female" });
+                await employeeRespository.CreateAsync(new EmployeeEntity { EmployeeId = 3, Age = 32, FirstName = "Anita", LastName = "Nemoli", Gender = "Female" });
+                await employeeRespository.CreateAsync(new EmployeeEntity { EmployeeId = 4, Age = 32, FirstName = "Ramis", LastName = "David", Gender = "Male" });
 
-                    await employeeRespository.CreateAsync(new EmployeeEntity { EmployeeId =1, Age = 32, FirstName="Adam",LastName="Smith", Gender="Male" });
-                    await employeeRespository.CreateAsync(new EmployeeEntity { EmployeeId = 2, Age = 49, FirstName = "Jamima", LastName = "Smith", Gender = "Female" });
-                    await employeeRespository.CreateAsync(new EmployeeEntity { EmployeeId = 3, Age = 32, FirstName = "Anita", LastName = "Nemoli", Gender = "Female" });
-                    await employeeRespository.CreateAsync(new EmployeeEntity { EmployeeId = 4, Age = 32, FirstName = "Ramis", LastName = "David", Gender = "Male" });
-                }
+                var result = await employeeRespository.DeleteAsync(3);
+                Assert.AreEqual(result, true);
 
-                using (var context = new EmployeeDbContext(options))
-                {
-                    var employeeRespository = new EmployeeRepository(context);
+                var employees = await employeeRespository.GetAsync();
+                Assert.AreEqual(employees.Count(), 3);
 
-                    var result = await employeeRespository.DeleteAsync(3);
-                    Assert.AreEqual(result, true);
-
-                    var employees = await employeeRespository.GetAsync();
-                    Assert.AreEqual(employees.Count(), 3);
-                }
             }).GetAwaiter().GetResult();
         }
 
@@ -52,10 +46,8 @@ namespace Tests.Unit.Sample.Repositories
         {
             Task.Run(async () =>
             {
-                using (var context = new EmployeeDbContext(options))
-                {
-                    await context.DisposeAsync();
-                }
+                await dbContext.DisposeAsync();
+
             }).GetAwaiter().GetResult();
         }
     }
